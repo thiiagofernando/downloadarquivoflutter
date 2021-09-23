@@ -1,12 +1,12 @@
 ﻿# Aplicativo para Baixar Arquivo em Flutter
 
-Aplicativo de Downaload de arquivos de uma API utilizando Flutter(Android/iOS) 1.22.0
+Aplicativo de Downaload de arquivos de uma API utilizando Flutter(Android/iOS) 2.5.1
 
 # Downaload do SDK do Flutter Utilizado
 
 - [SDK Windows](https://storage.googleapis.com/flutter_infra_release/releases/stable/windows/flutter_windows_1.22.0-stable.zip)
-- [SDK macOS](https://storage.googleapis.com/flutter_infra_release/releases/stable/macos/flutter_macos_1.22.0-stable.zip)
-- [SDK Linux](https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_1.22.0-stable.tar.xz)
+- [SDK macOS](https://storage.googleapis.com/flutter_infra_release/releases/stable/macos/flutter_macos_2.5.1-stable.zip)
+- [SDK Linux](https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_2.5.1-stable.tar.xz)
 
 # Iniciar o Projeto
 - Abrir o projeto no Visual Studio Code

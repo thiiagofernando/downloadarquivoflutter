@@ -77,12 +77,21 @@ class _MyStatelessWidgetState extends State<MyStatelessWidget> {
             child: Container(
               width: 300,
               height: 80,
-              child: TextButton.icon(
-                icon: Icon(Icons.analytics_outlined),
-                label: Text('Baixar Arquivo 2021 $porcentagemDownload'),
+              child: TextButton(
+                style: TextButton.styleFrom(
+                    textStyle: const TextStyle(
+                  fontSize: 15,
+                )),
                 onPressed: () {
                   baixarArquivo(context);
                 },
+                child: TextButton.icon(
+                  onPressed: () {
+                    baixarArquivo(context);
+                  },
+                  icon: Icon(Icons.analytics_outlined),
+                  label: Text('Baixar Arquivo 2021 $porcentagemDownload'),
+                ),
               ),
             ),
           );
@@ -126,6 +135,7 @@ class _MyStatelessWidgetState extends State<MyStatelessWidget> {
       String fileName = url.substring(url.lastIndexOf("/") + 1);
       var date = '${DateTime.now().microsecond}_';
       var savePath = "$dir/$date$fileName";
+      print(savePath);
       File file = File(savePath);
       var raf = file.openSync(mode: FileMode.write);
       raf.writeFromSync(response.data);
