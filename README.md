@@ -20,4 +20,4 @@ Aplicativo de Downaload de arquivos de uma API utilizando Flutter(Android/iOS) 1
         flutter run
      ```
      
-   <img src="https://raw.githubusercontent.com/thiiagofernando/downloadarquivoflutter/main/gitapparquivo.gif" width="300" height="585"/>
+   <img src="https://raw.githubusercontent.com/thiiagofernando/downloadarquivoflutter/main/gitapparquivo.gif" width="340" height="585"/>
