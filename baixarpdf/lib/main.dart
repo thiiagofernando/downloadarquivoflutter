@@ -1,4 +1,6 @@
 import 'dart:io';
+import 'package:baixarpdf/screens/consulta_frete.dart';
+import 'package:baixarpdf/screens/download_page.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
@@ -16,10 +18,14 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: MyApp._title,
       home: MyStatelessWidget(),
+      routes: <String, WidgetBuilder>{
+        '/downalodpage': (BuildContext context) => new DownloadPage(),
+        '/consultacep': (BuildContext context) => new ConsultaCep(),
+      },
     );
   }
 }
@@ -31,129 +37,61 @@ class MyStatelessWidget extends StatefulWidget {
 }
 
 class _MyStatelessWidgetState extends State<MyStatelessWidget> {
-  String porcentagemDownload = "";
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       drawer: Drawer(
         elevation: 5,
-        child: ListView(
-          children: <Widget>[
-            SizedBox(
-              height: 50,
+        child: ListView(children: <Widget>[
+          SizedBox(
+            height: 50,
+          ),
+          DrawerHeader(
+            child: Image.network(
+              "https://i.pinimg.com/736x/1f/eb/df/1febdf1846353dcb1cfbb679e0842d37.jpg",
             ),
-            DrawerHeader(
-              child: null,
-              decoration: BoxDecoration(
-                color: Colors.lightBlue[900],
-                shape: BoxShape.circle,
+          ),
+          Divider(
+            color: Colors.grey.shade600,
+          ),
+          ListTile(
+            title: Text(
+              "Download Arquivo",
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 16,
+                color: Colors.blueAccent,
               ),
             ),
-            Divider(
-              color: Colors.grey.shade600,
-            ),
-            ListTile(
-              title: Text(
-                "Nome do Menu",
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16,
-                  color: Colors.blueAccent,
-                ),
+            onTap: () {
+              Navigator.of(context).pushNamed('/downalodpage');
+            },
+          ),
+          ListTile(
+            title: Text(
+              "Consultar Frete",
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 16,
+                color: Colors.blueAccent,
               ),
-              onTap: () {
-                print("Clicou no menu");
-              },
             ),
-          ],
-        ),
+            onTap: () {
+              Navigator.of(context).pushNamed('/consultacep');
+            },
+          ),
+        ]),
       ),
       appBar: AppBar(
-        title: Text("Baixar de Arquivo"),
+        title: Text("Minhas Demos"),
       ),
       body: Builder(
         builder: (BuildContext context) {
           return Center(
-            child: Container(
-              width: 300,
-              height: 80,
-              child: TextButton(
-                style: TextButton.styleFrom(
-                    textStyle: const TextStyle(
-                  fontSize: 15,
-                )),
-                onPressed: () {
-                  baixarArquivo(context);
-                },
-                child: TextButton.icon(
-                  onPressed: () {
-                    baixarArquivo(context);
-                  },
-                  icon: Icon(Icons.analytics_outlined),
-                  label: Text('Baixar Arquivo 2021 $porcentagemDownload'),
-                ),
-              ),
-            ),
+            child: Text("Bem Vindo!!"),
           );
         },
       ),
     );
-  }
-
-  showDownloadProgress(received, total) {
-    if (total != -1) {
-      setState(
-        () {
-          porcentagemDownload =
-              "\n" + (received / total * 100).toStringAsFixed(0) + "%";
-          if ((received / total * 100) == 100) {
-            porcentagemDownload = "\n Downaload realizado";
-          }
-        },
-      );
-    }
-  }
-
-  baixarArquivo(context) async {
-    try {
-      var url =
-          "https://www.ifsudestemg.edu.br/editais/barbacena/estagio-remunerado/2019/estagio-remunerado-area-nutricao/edital-08_2019-nivel-superior.pdf";
-      Dio dio = Dio();
-      Response response = await dio.get(
-        url,
-        onReceiveProgress: showDownloadProgress,
-        options: Options(
-            responseType: ResponseType.bytes,
-            followRedirects: false,
-            validateStatus: (status) {
-              return status < 500;
-            }),
-      );
-
-      var dir = await obterCaminhoDispositivo();
-
-      String fileName = url.substring(url.lastIndexOf("/") + 1);
-      var date = '${DateTime.now().microsecond}_';
-      var savePath = "$dir/$date$fileName";
-      print(savePath);
-      File file = File(savePath);
-      var raf = file.openSync(mode: FileMode.write);
-      raf.writeFromSync(response.data);
-      await raf.close();
-    } catch (e) {
-      setState(() {
-        porcentagemDownload = "\n Falha no Downaload";
-      });
-    }
-  }
-
-  Future<String> obterCaminhoDispositivo() async {
-    String caminho = "";
-    if (Platform.isAndroid) {
-      caminho = "/sdcard/download";
-    } else {
-      caminho = (await getApplicationDocumentsDirectory()).path;
-    }
-    return caminho;
   }
 }
