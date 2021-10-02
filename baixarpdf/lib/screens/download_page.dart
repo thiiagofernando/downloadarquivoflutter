@@ -1,11 +1,14 @@
 import 'dart:io';
 
+import 'package:baixarpdf/models/foto_model.dart.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/painting.dart';
+import 'package:flutter/widgets.dart';
 import 'package:path_provider/path_provider.dart';
 
 class DownloadPage extends StatefulWidget {
-  //const DownloadPage({Key key}) : super(key: key);
+  const DownloadPage({Key key}) : super(key: key);
 
   @override
   _DownloadPageState createState() => _DownloadPageState();
@@ -13,34 +16,104 @@ class DownloadPage extends StatefulWidget {
 
 class _DownloadPageState extends State<DownloadPage> {
   String porcentagemDownload = "";
+  bool temFotoNova = false;
+  bool processando = false;
+  String urlFoto = "";
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Download de Arquivos"),
+        title: Text("Visualizador de Gatinhos"),
       ),
-      body: Center(
-        child: Container(
-          width: 300,
-          height: 80,
-          child: TextButton(
-            style: TextButton.styleFrom(
-                textStyle: const TextStyle(
-              fontSize: 15,
-            )),
-            onPressed: () {
-              baixarArquivo(context);
-            },
-            child: TextButton.icon(
-              onPressed: () {
-                baixarArquivo(context);
-              },
-              icon: Icon(Icons.analytics_outlined),
-              label: Text('Baixar Arquivo 2021 $porcentagemDownload'),
-            ),
+      body: SingleChildScrollView(
+        child: Center(
+          child: Column(
+            children: [
+              visualizarFoto(),
+              botoesBuscarBaixar(),
+            ],
           ),
         ),
       ),
+    );
+  }
+
+  visualizarFoto() {
+    if (temFotoNova) {
+      return Container(
+        alignment: Alignment.center, // use aligment
+        child: Image.network(
+          urlFoto,
+          fit: BoxFit.cover,
+        ),
+      );
+    } else {
+      return SizedBox(
+        height: 3,
+      );
+    }
+  }
+
+  botoesBuscarBaixar() {
+    return Column(
+      children: [
+        Row(
+          children: [
+            TextButton(
+              style: TextButton.styleFrom(
+                textStyle: const TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              onPressed: () {
+                buscarFoto();
+              },
+              child: TextButton.icon(
+                onPressed: () {
+                  buscarFoto();
+                },
+                icon: Icon(Icons.search),
+                label: Text(
+                  'Buscar Nova Foto',
+                  style: TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ),
+            TextButton(
+              style: TextButton.styleFrom(
+                textStyle: const TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              onPressed: () {
+                baixarArquivo();
+              },
+              child: TextButton.icon(
+                onPressed: () {
+                  baixarArquivo();
+                },
+                icon: Icon(Icons.analytics_outlined),
+                label: Text(
+                  'Baixar Foto',
+                  style: TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+        SizedBox(
+          height: 5,
+        ),
+        exibirProcessando(),
+      ],
     );
   }
 
@@ -58,10 +131,57 @@ class _DownloadPageState extends State<DownloadPage> {
     }
   }
 
-  baixarArquivo(context) async {
+  exibirProcessando() {
+    if (processando) {
+      return Container(
+        alignment: Alignment.center,
+        child: Column(
+          children: [
+            Text(
+              "Processando..",
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            Text(
+              porcentagemDownload,
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ],
+        ),
+      );
+    } else {
+      return SizedBox();
+    }
+  }
+
+  buscarFoto() async {
+    setState(() {
+      processando = true;
+    });
+    Dio dio = Dio();
+    Response response = await dio.get(
+      "https://api.thecatapi.com/v1/images/search",
+    );
+    var foto = Foto.fromJson(response.data[0]);
+    setState(() {
+      urlFoto = foto.url;
+      temFotoNova = true;
+      processando = false;
+      porcentagemDownload = "";
+    });
+  }
+
+  baixarArquivo() async {
     try {
-      var url =
-          "https://www.ifsudestemg.edu.br/editais/barbacena/estagio-remunerado/2019/estagio-remunerado-area-nutricao/edital-08_2019-nivel-superior.pdf";
+      setState(() {
+        processando = true;
+      });
+      var url = urlFoto;
       Dio dio = Dio();
       Response response = await dio.get(
         url,
@@ -89,6 +209,10 @@ class _DownloadPageState extends State<DownloadPage> {
         porcentagemDownload = "\n Falha no Downaload";
       });
     }
+    setState(() {
+      porcentagemDownload = "";
+      processando = false;
+    });
   }
 
   Future<String> obterCaminhoDispositivo() async {
